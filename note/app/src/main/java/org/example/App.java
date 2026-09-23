@@ -14,11 +14,8 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) {
-    Label label = new Label("Hello, JavaFX!");
-    StackPane root = new StackPane(label);
-    Scene scene = new Scene(root, 400, 300);
 
-    Home.homePage(stage, scene);
+    Home.homePage(stage);
   }
 
   public static void main(String[] args) {
