@@ -3,6 +3,7 @@
  */
 package org.example;
 
+import org.example.views.Home;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -13,12 +14,11 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) {
-    Label label = new Label("Hello, JavaFX with Gradle!");
-    Scene scene = new Scene(new StackPane(label), 640, 480);
+    Label label = new Label("Hello, JavaFX!");
+    StackPane root = new StackPane(label);
+    Scene scene = new Scene(root, 400, 300);
 
-    stage.setTitle("My JavaFX App");
-    stage.setScene(scene);
-    stage.show();
+    Home.homePage(stage, scene);
   }
 
   public static void main(String[] args) {
