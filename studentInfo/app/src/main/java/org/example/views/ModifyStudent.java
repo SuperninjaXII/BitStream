@@ -35,14 +35,19 @@ public class ModifyStudent {
         idInput.setPromptText("Student ID");
         Button searchBtn = new Button("Search");
 
+        TextField editedIdInput = new TextField();
+        editedIdInput.setPromptText("Student ID");
+        editedIdInput.setEditable(false);
+        editedIdInput.setDisable(true);
+
         CheckBox modifyIdCheckbox = new CheckBox("Modify ID");
         modifyIdCheckbox.setDisable(true);
-        modifyIdCheckbox.setOnAction(e -> idInput.setEditable(modifyIdCheckbox.isSelected()));
+        modifyIdCheckbox.setOnAction(e -> editedIdInput.setEditable(modifyIdCheckbox.isSelected()));
 
         TextField nameInput = new TextField();
-        nameInput.setPromptText("Student Name");
+        nameInput.setPromptText("Student Name (letters only)");
         TextField programInput = new TextField();
-        programInput.setPromptText("Student Program");
+        programInput.setPromptText("Student Program (letters only)");
         TextField yearInput = new TextField();
         yearInput.setPromptText("Student Year");
 
@@ -75,22 +80,28 @@ public class ModifyStudent {
                 return;
             }
 
+            saveBtn.setDisable(true);
+            deleteBtn.setDisable(true);
+            modifyIdCheckbox.setSelected(false);
+            modifyIdCheckbox.setDisable(true);
+            editedIdInput.clear();
+            editedIdInput.setEditable(false);
+            editedIdInput.setDisable(true);
+            currentId[0] = -1;
+
             Student student = StudentHandler.getStudentById(id);
 
             if (student == null) {
                 showAlert(Alert.AlertType.INFORMATION, "Not Found", "No student found with ID: " + id);
-                saveBtn.setDisable(true);
-                deleteBtn.setDisable(true);
-                modifyIdCheckbox.setDisable(true);
             } else {
                 heading.setText("Editing: " + student.getName());
+                editedIdInput.setText(String.valueOf(student.getId()));
                 nameInput.setText(student.getName());
                 programInput.setText(student.getProgram());
                 yearInput.setText(String.valueOf(student.getYear()));
                 currentId[0] = id;
 
-                idInput.setEditable(false);
-                modifyIdCheckbox.setSelected(false);
+                editedIdInput.setDisable(false);
                 modifyIdCheckbox.setDisable(false);
                 saveBtn.setDisable(false);
                 deleteBtn.setDisable(false);
@@ -101,10 +112,15 @@ public class ModifyStudent {
             String name = nameInput.getText().trim();
             String program = programInput.getText().trim();
             String yearStr = yearInput.getText().trim();
-            String idStr = idInput.getText().trim();
+            String idStr = editedIdInput.getText().trim();
 
             if (name.isEmpty() || program.isEmpty() || yearStr.isEmpty() || idStr.isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill in all fields.");
+                return;
+            }
+
+            if (!name.matches("[\\p{L} ]+") || !program.matches("[\\p{L} ]+")) {
+                showAlert(Alert.AlertType.WARNING, "Validation Error", "Name and program must contain letters only. Spaces are allowed.");
                 return;
             }
 
@@ -148,10 +164,12 @@ public class ModifyStudent {
             });
         });
 
-        HBox idBox = new HBox(10, idInput, searchBtn, modifyIdCheckbox);
+        HBox searchBox = new HBox(10, idInput, searchBtn);
+        searchBox.setAlignment(Pos.CENTER);
+        HBox idBox = new HBox(10, new Label("Student ID:"), editedIdInput, modifyIdCheckbox);
         idBox.setAlignment(Pos.CENTER);
 
-        layout.getChildren().addAll(heading, idBox, nameInput, programInput, yearInput, buttonBox);
+        layout.getChildren().addAll(heading, searchBox, idBox, nameInput, programInput, yearInput, buttonBox);
         Scene scene = new Scene(layout, 480, 420);
         if (styleConsumer != null) {
             styleConsumer.accept(scene);
